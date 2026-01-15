@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>slashcmd - Upgrade to Pro</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .upgrade-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .upgrade-card {
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 2.5rem;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .upgrade-card h1 {
+      font-size: 1.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .upgrade-card .price {
+      font-size: 3rem;
+      margin: 1.5rem 0;
+    }
+
+    .upgrade-card ul {
+      list-style: none;
+      text-align: left;
+      margin-bottom: 2rem;
+    }
+
+    .upgrade-card li {
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .upgrade-card li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--green);
+    }
+
+    .upgrade-btn {
+      display: block;
+      width: 100%;
+      background: var(--accent);
+      color: var(--bg);
+      padding: 1rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s;
+    }
+
+    .upgrade-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .back-link {
+      margin-top: 1.5rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="upgrade-container">
+    <div class="upgrade-card">
+      <h1>slashcmd Pro</h1>
+      <p style="color: var(--text-muted);">Unlimited commands, forever</p>
+
+      <div class="price">$5<span style="font-size: 1rem; color: var(--text-muted);">/month</span></div>
+
+      <ul>
+        <li>Unlimited command generations</li>
+        <li>All explanation styles</li>
+        <li>Priority support</li>
+        <li>Cancel anytime</li>
+      </ul>
+
+      <button class="upgrade-btn" onclick="startCheckout()">
+        Upgrade Now
+      </button>
+
+      <p class="back-link"><a href="/">← Back to home</a></p>
+    </div>
+  </div>
+
+  <script>
+    function startCheckout() {
+      // This will redirect to Clerk's billing portal
+      // For now, show a placeholder message
+      const btn = document.querySelector('.upgrade-btn');
+      btn.textContent = 'Setting up Clerk billing...';
+      btn.disabled = true;
+
+      // In production:
+      // window.location.href = 'https://accounts.clerk.dev/user/billing';
+
+      setTimeout(() => {
+        btn.textContent = 'Clerk billing not configured yet';
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

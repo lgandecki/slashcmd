@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>slashcmd - Sign in</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .auth-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .auth-card h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .auth-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .github-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #24292f;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 500;
+      border: 1px solid #444;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+
+    .github-btn:hover {
+      background: #32383f;
+    }
+
+    .github-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .github-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    .success {
+      color: var(--green);
+    }
+
+    .error {
+      color: var(--red);
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    #status {
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <h1>slashcmd</h1>
+      <p>Sign in to authenticate your CLI</p>
+
+      <div id="auth-content">
+        <button class="github-btn" id="github-btn" onclick="signInWithGitHub()">
+          <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          Sign in with GitHub
+        </button>
+      </div>
+
+      <div id="status"></div>
+    </div>
+  </div>
+
+  <!-- Clerk JS SDK -->
+  <script
+    async
+    crossorigin="anonymous"
+    data-clerk-publishable-key="pk_live_Y2xlcmsubGdhbmRlY2tpLm5ldCQ"
+    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    type="text/javascript"
+  ></script>
+
+  <script>
+    const WORKER_URL = 'https://groq-warm-proxy.gozdak.workers.dev';
+
+    // Get session ID from URL
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session');
+
+    if (!sessionId) {
+      document.getElementById('status').innerHTML = '<p class="error">Invalid session. Please run "slashcmd login" again.</p>';
+      document.getElementById('auth-content').style.display = 'none';
+    }
+
+    // Wait for Clerk to load
+    window.addEventListener('load', async () => {
+      try {
+        await window.Clerk.load();
+
+        // Check if already signed in
+        if (window.Clerk.user) {
+          await completeAuth();
+        }
+      } catch (e) {
+        console.error('Clerk load error:', e);
+      }
+    });
+
+    async function signInWithGitHub() {
+      const btn = document.getElementById('github-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div> Connecting...';
+
+      try {
+        // Use Clerk's OAuth flow
+        await window.Clerk.client.signIn.authenticateWithRedirect({
+          strategy: 'oauth_github',
+          redirectUrl: window.location.origin + '/cli-auth/callback',
+          redirectUrlComplete: window.location.origin + '/cli-auth/?session=' + sessionId + '&completed=1',
+        });
+      } catch (e) {
+        console.error('Sign in error:', e);
+        document.getElementById('status').innerHTML = '<p class="error">Sign in failed. Please try again.</p>';
+        btn.disabled = false;
+        btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg> Sign in with GitHub`;
+      }
+    }
+
+    // Handle return from OAuth
+    if (params.get('completed') === '1') {
+      document.getElementById('auth-content').innerHTML = '<div class="spinner"></div>';
+      document.getElementById('status').innerHTML = '<p>Completing authentication...</p>';
+
+      window.addEventListener('load', async () => {
+        try {
+          await window.Clerk.load();
+          if (window.Clerk.user) {
+            await completeAuth();
+          } else {
+            document.getElementById('status').innerHTML = '<p class="error">Sign in incomplete. Please try again.</p>';
+          }
+        } catch (e) {
+          console.error('Auth completion error:', e);
+          document.getElementById('status').innerHTML = '<p class="error">Authentication failed.</p>';
+        }
+      });
+    }
+
+    async function completeAuth() {
+      document.getElementById('auth-content').innerHTML = '<div class="spinner"></div>';
+      document.getElementById('status').innerHTML = '<p>Completing authentication...</p>';
+
+      try {
+        const user = window.Clerk.user;
+
+        // Get GitHub account info
+        const githubAccount = user.externalAccounts?.find(a => a.provider === 'github');
+        const githubId = githubAccount?.providerUserId || user.id;
+        const username = githubAccount?.username || user.username || user.firstName || 'user';
+
+        // Call our Worker to complete the auth
+        const response = await fetch(`${WORKER_URL}/auth/callback`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            session_id: sessionId,
+            github_id: githubId,
+            username: username,
+            clerk_user_id: user.id,
+          }),
+        });
+
+        if (response.ok) {
+          document.getElementById('auth-content').innerHTML = '<p class="success" style="font-size: 2rem;">✓</p>';
+          document.getElementById('status').innerHTML = `
+            <p class="success">Welcome, ${username}!</p>
+            <p style="margin-top: 1rem; color: var(--text-muted);">
+              Authentication complete.<br>
+              You can close this tab and return to your terminal.
+            </p>
+          `;
+        } else {
+          const error = await response.text();
+          throw new Error(error || 'Auth callback failed');
+        }
+      } catch (e) {
+        console.error('Complete auth error:', e);
+        document.getElementById('status').innerHTML = `<p class="error">Authentication failed: ${e.message}</p>`;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+# Rust
+cli/target/
+**/*.rs.bk
+
+# Node/Wrangler
+node_modules/
+.wrangler/
+worker/wrangler.toml
+
+# OS
+.DS_Store
+*.swp

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>slashcmd - Natural language to shell commands</title>
+  <link rel="stylesheet" href="/styles.css">
+  <meta name="description" content="Convert natural language to shell commands with AI. Free for 100 commands.">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>slashcmd</h1>
+      <p class="tagline">Natural language to shell commands</p>
+    </header>
+
+    <section class="demo">
+      <!-- Example 1: Simple, just command and result -->
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+        </div>
+        <div class="terminal-body">
+          <div class="line">
+            <span class="prompt">$</span>
+            <span class="command">slashcmd find files larger than 100mb</span>
+          </div>
+          <div class="line output">
+            <span class="result">find . -type f -size +100M</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Example 2: Human explanation for piped command -->
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <span class="terminal-title">with explanation</span>
+        </div>
+        <div class="terminal-body">
+          <div class="line">
+            <span class="prompt">$</span>
+            <span class="command">slashcmd top 5 largest directories explain</span>
+          </div>
+          <div class="line output">
+            <span class="result">du -sh */ | sort -hr | head -5</span>
+          </div>
+          <div class="explanation">
+            <pre class="pseudocode"><span class="cmd">du -sh */</span>    <span class="arrow">→</span> get size of each directory
+<span class="cmd">sort -hr</span>     <span class="arrow">→</span> sort by size, largest first
+<span class="cmd">head -5</span>      <span class="arrow">→</span> show only top 5</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Example 3: Danger with human explanation -->
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <span class="terminal-title">with human explanation</span>
+        </div>
+        <div class="terminal-body">
+          <div class="line">
+            <span class="prompt">$</span>
+            <span class="command">slashcmd delete all node_modules folders</span>
+          </div>
+          <div class="line output">
+            <span class="result-danger">find . -name "node_modules" -type d -exec rm -rf {} +</span>
+          </div>
+          <div class="explanation danger">
+            <span class="safety-tag danger">[DANGER]</span> Finds all folders named "node_modules"
+            starting from current directory and deletes them permanently.
+            Cannot be undone.
+          </div>
+          <div class="line dimmed">
+            <span class="danger-notice">⚠ DANGER:</span> Command copied to clipboard. Paste to run.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="install">
+      <h2>Install</h2>
+      <div class="install-options">
+        <div class="install-option">
+          <span class="install-label">Homebrew</span>
+          <div class="code-block">
+            <code>brew install lgandecki/tap/slashcmd</code>
+            <button class="copy-btn" onclick="copyText('brew install lgandecki/tap/slashcmd', this)">copy</button>
+          </div>
+        </div>
+        <div class="install-option">
+          <span class="install-label">Script</span>
+          <div class="code-block">
+            <code>curl -sSL slashcmd.lgandecki.net/install.sh | sh</code>
+            <button class="copy-btn" onclick="copyText('curl -sSL slashcmd.lgandecki.net/install.sh | sh', this)">copy</button>
+          </div>
+          <p class="note"><a href="/install.sh">Inspect script</a> before running</p>
+        </div>
+        <div class="install-option">
+          <span class="install-label">From source</span>
+          <div class="code-block">
+            <code>git clone https://github.com/lgandecki/slashcmd && cd slashcmd/cmd && cargo build --release</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="usage">
+      <h2>Usage</h2>
+      <div class="code-block">
+        <pre>slashcmd login                    # Authenticate with GitHub
+slashcmd find large files         # Get the command
+slashcmd python list all ports    # Explain with Python syntax
+slashcmd status                   # Check usage</pre>
+      </div>
+      <p class="note">Shell alias: <code>/cmd() { slashcmd "$@" }</code></p>
+    </section>
+
+    <section class="pricing">
+      <h2>Pricing</h2>
+      <div class="pricing-cards">
+        <div class="card">
+          <h3>Free</h3>
+          <div class="price">$0</div>
+          <ul>
+            <li>100 commands (lifetime)</li>
+            <li>All features included</li>
+            <li>GitHub authentication</li>
+          </ul>
+        </div>
+        <div class="card featured">
+          <h3>Pro</h3>
+          <div class="price">$5<span>/month</span></div>
+          <ul>
+            <li>Unlimited commands</li>
+            <li>Priority support</li>
+            <li>Cancel anytime</li>
+          </ul>
+          <a href="/upgrade" class="btn">Upgrade</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>&copy; 2025 <a href="https://lgandecki.net">lgandecki.net</a></p>
+    </footer>
+  </div>
+
+  <script>
+    function copyText(text, btn) {
+      navigator.clipboard.writeText(text);
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 2000);
+    }
+  </script>
+</body>
+</html>

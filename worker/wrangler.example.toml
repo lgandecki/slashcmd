@@ -1,0 +1,22 @@
+name = "slashcmd-api"
+main = "groq-warm-proxy.ts"
+compatibility_date = "2024-01-01"
+
+# Create your own: wrangler d1 create slashcmd-db
+[[d1_databases]]
+binding = "DB"
+database_name = "slashcmd-db"
+database_id = "YOUR_D1_DATABASE_ID"
+
+# Create your own: wrangler kv:namespace create RATE_LIMITS
+[[kv_namespaces]]
+binding = "RATE_LIMITS"
+id = "YOUR_KV_NAMESPACE_ID"
+
+# Required secrets (add with: wrangler secret put <NAME>):
+# - GROQ_API_KEY
+# - GEMINI_API_KEY  
+# - JWT_SECRET
+# - CLERK_SECRET_KEY
+# - CLERK_PUBLISHABLE_KEY
+# - CLERK_WEBHOOK_SECRET

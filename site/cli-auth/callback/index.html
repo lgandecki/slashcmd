@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>slashcmd - Completing sign in...</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .auth-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .spinner {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="spinner"></div>
+    <p style="margin-top: 1rem; color: var(--text-muted);">Completing sign in...</p>
+  </div>
+
+  <!-- Clerk JS SDK -->
+  <script
+    async
+    crossorigin="anonymous"
+    data-clerk-publishable-key="pk_live_Y2xlcmsubGdhbmRlY2tpLm5ldCQ"
+    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    type="text/javascript"
+  ></script>
+
+  <script>
+    // This page handles the OAuth callback from GitHub via Clerk
+    // Clerk will automatically process the callback and redirect to redirectUrlComplete
+    window.addEventListener('load', async () => {
+      try {
+        await window.Clerk.load();
+        // Clerk handles the redirect automatically based on the OAuth state
+      } catch (e) {
+        console.error('Callback error:', e);
+        document.querySelector('.auth-container').innerHTML = `
+          <p style="color: var(--red);">Authentication error. Please try again.</p>
+          <a href="/" style="margin-top: 1rem;">Return home</a>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>

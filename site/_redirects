@@ -1,0 +1,5 @@
+# Cloudflare Pages redirects
+
+# Handle SPA-style routes
+/cli-auth/*  /cli-auth/index.html  200
+/upgrade/*   /upgrade/index.html   200
